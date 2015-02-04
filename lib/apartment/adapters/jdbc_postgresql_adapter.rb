@@ -66,13 +66,6 @@ module Apartment
     end
     
     #Separate Adapter for Postgresql when using schemas and use_sql
-    class JDBCPostgresqlSchemaFromSqlAdapter < PostgresqlSchemaFromSqlAdapter 
-    
-    private
-
-      def rescue_from
-        ActiveRecord::JDBCError
-      end
-    end
+    class JDBCPostgresqlSchemaFromSqlAdapter < PostgresqlSchemaFromSqlAdapter ;end
   end
 end
