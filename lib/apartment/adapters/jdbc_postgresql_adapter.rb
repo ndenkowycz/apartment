@@ -4,9 +4,10 @@ module Apartment
   module Tenant
 
     def self.jdbc_postgresql_adapter(config)
-      Apartment.use_schemas ?
-        Adapters::JDBCPostgresqlSchemaAdapter.new(config) :
-        Adapters::JDBCPostgresqlAdapter.new(config)
+      adapter = Adapters::JDBCPostgresqlAdapter
+      adapter = Adapters::JDBCPostgresqlSchemaAdapter if Apartment.use_schemas
+      adapter = Adapters::JDBCPostgresqlSchemaFromSqlAdapter if Apartment.use_sql && Apartment.use_schemas
+      adapter.new(config)
     end
   end
 
@@ -57,6 +58,16 @@ module Apartment
         raise TenantNotFound, "One of the following schema(s) is invalid: #{full_search_path}"
       end
 
+    private
+
+      def rescue_from
+        ActiveRecord::JDBCError
+      end
+    end
+    
+    #Separate Adapter for Postgresql when using schemas and use_sql
+    class JDBCPostgresqlSchemaFromSqlAdapter < PostgresqlSchemaFromSqlAdapter 
+    
     private
 
       def rescue_from
